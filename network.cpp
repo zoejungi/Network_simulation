@@ -43,23 +43,7 @@ size_t Network::random_connect(const double& mean_deg){
 	for(size_t node_one(0); node_one<values.size(); ++node_one){
 		size_t _degree(rng.poisson(mean_deg));
 		
-		/*/
-		version 1: adding number of degrees from poisson dist without taking into account the degree of node_one
-		version 2: adding only the number of degrees that are missing, if _degreetoadd<0 it doesn't do anything
-		* 
-		* size_t _degreetoadd(_degree - degree(node_one));
-		* 
-		* if(0<_degreetoadd<values.size()){
-			for(size_t link(0); link<_degreetoadd; ++link){
-				size_t node_two;
-				do{
-					node_two = rng.uniform_int(0, values.size());	
-				}while (!add_link(node_one, node_two));
-				++nb;
-			}
-		/*/
-		
-		if(0<_degree<values.size()-degree(node_one)){
+		if(0<_degree and _degree < (values.size()-degree(node_one))){
 			for(size_t link(0); link<_degree; ++link){
 				size_t node_two;
 				do{
@@ -67,7 +51,7 @@ size_t Network::random_connect(const double& mean_deg){
 				}while (!add_link(node_one, node_two));
 				++nb;
 			}
-		}else{std::cerr << "too many or not enough links" << std::endl;}		//remove if test passed
+		}
 	}
 	
 	return nb;
@@ -100,7 +84,7 @@ size_t Network::degree(const size_t& _n) const{
 }
 
 double Network::value(const size_t& _n) const{
-	return values[_n-1];
+	return values[_n];
 }
 
 std::vector<double> Network::sorted_values() const{
@@ -118,8 +102,7 @@ std::vector<size_t> Network::neighbors(const size_t& _n) const{
 		for (auto it (range.first); it != range.second; ++it){
 			_neighbors.push_back(it->second);
 		}
-	}else{std::cerr << _n << " doesn't have any links" << std::endl;}
+	}
 
 	return _neighbors;
 }
-
