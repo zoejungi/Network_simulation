@@ -3,7 +3,7 @@
 #include "random.h"
 
 
-Network::Network() {}
+Network::Network(){}
 
 void Network::resize(const size_t& new_size){
 	values.clear();
@@ -37,15 +37,30 @@ bool Network::add_link(const size_t& a, const size_t& b){
 
 size_t Network::random_connect(const double& mean_deg){
 	links.clear();
-	size_t nb(0); //counts number of generated links
+	size_t nb(0);
 	RandomNumbers rng;
 	
 	for(size_t node_one(0); node_one<values.size(); ++node_one){
 		size_t _degree(rng.poisson(mean_deg));
-		size_t _degreetoadd(_degree - degree(node_one));
 		
-		if(0<_degreetoadd<values.size()){
+		/*/
+		version 1: adding number of degrees from poisson dist without taking into account the degree of node_one
+		version 2: adding only the number of degrees that are missing, if _degreetoadd<0 it doesn't do anything
+		* 
+		* size_t _degreetoadd(_degree - degree(node_one));
+		* 
+		* if(0<_degreetoadd<values.size()){
 			for(size_t link(0); link<_degreetoadd; ++link){
+				size_t node_two;
+				do{
+					node_two = rng.uniform_int(0, values.size());	
+				}while (!add_link(node_one, node_two));
+				++nb;
+			}
+		/*/
+		
+		if(0<_degree<values.size()-degree(node_one)){
+			for(size_t link(0); link<_degree; ++link){
 				size_t node_two;
 				do{
 					node_two = rng.uniform_int(0, values.size());	
